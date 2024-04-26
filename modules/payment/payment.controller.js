@@ -68,11 +68,9 @@
 //     failure
 // };
 import axios from 'axios';
-import crypto from 'crypto';
-import Student from "../../db/model/student.model.js";
 import studentModel from '../../db/model/student.model.js';
-
 const PAYMOB_URL = "https://accept.paymob.com/api";
+import transaction from "../../db/model/transaction.model.js"
 
 const payment = async (req, res) => {
     try {
@@ -82,26 +80,25 @@ const payment = async (req, res) => {
         const iframeURL = await getIframeURL(paymentToken);
         res.status(200).json({ iframeURL });
     } catch (error) {
-        console.error('Error initiating payment:', error);
+        // console.error('Error initiating payment:', error);
         res.status(500).json({ error: 'Failed to initiate payment' });
     }
 };
 
 // Function to generate payment token
-async function generatePaymentToken(token, orderId, studentId) {
-    const student = await studentModel.findOne({ id: studentId })
-    console.log(student)
-
+async function generatePaymentToken(token, orderId, student) {
+    const studentLogedIn = await studentModel.findOne({ id: student })
+    // console.log(studentLogedIn)
     const data = {
         "auth_token": token,
         "amount_cents": "1500",
         "expiration": 3600,
         "order_id": orderId,
         "billing_data": {
-            "email": student.email,
-            "phone_number": `+2${student.phone}`,
-            "first_name": student.firstName,
-            "last_name": student.lastName,
+            "email": studentLogedIn.email,
+            "phone_number": studentLogedIn.phone,
+            "first_name": studentLogedIn.firstName,
+            "last_name": studentLogedIn.lastName,
             "apartment": "NA",
             "floor": "NA",
             "street": "NA",
@@ -117,9 +114,44 @@ async function generatePaymentToken(token, orderId, studentId) {
     const response = await axios.post('https://accept.paymob.com/api/acceptance/payment_keys', data);
     return response.data.token;
 }
+// Function to get authentication token
+async function getToken() {
+    const data = { "api_key": process.env.API_KEY, "username": process.env.USERNAME, "password": process.env.PASSWORD };
+    // console.log(data)
+    const response = await fetch('https://accept.paymob.com/api/auth/tokens', {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    const responseData = await response.json();
+    // console.log(responseData)
+    return responseData.token;
 
-// Other functions remain the same...
+}
 
+// Function to create an order
+async function createOrder(token) {
+    const data = {
+        "auth_token": token,
+        "delivery_needed": "false",
+        "amount_cents": "1500",
+        "currency": "EGP",
+        "items": []
+    };
+    const response = await fetch('https://accept.paymob.com/api/ecommerce/orders', {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    const responseData = await response.json();
+    return responseData.id;
+}
+
+// Function to get the URL for the payment iframe
+async function getIframeURL(token) {
+    // return `https://accept.paymob.com/api/acceptance/iframes/4485926?payment_token=${token}`;
+    return `https://accept.paymob.com/api/acceptance/iframes/824809?payment_token=${token}`;
+}
 const callbackNode = async (req, res) => {
     try {
         const transactionData = req.query;
@@ -127,7 +159,7 @@ const callbackNode = async (req, res) => {
             // Data received
             // Perform actions to save the data here
             await saveTransaction(transactionData)
-            console.log('Received transaction data:', transactionData);
+            // console.log('Received transaction data:', transactionData);
 
             // Send a success response
             res.status(200).json({ message: 'Received transaction data and saved successfully.', data: transactionData }).redirrect("https://6628754647e1144a767e6478--astonishing-tapioca-480cff.netlify.app/#/payment-status");
@@ -144,6 +176,7 @@ const callbackNode = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' }, error);
     }
 };
+
 const callback = async (req, res) => {
     try {
         const transactionData = req.body;
@@ -151,31 +184,31 @@ const callback = async (req, res) => {
             // Data received
             // Perform actions to save the data here
             await saveTransaction(transactionData)
-            console.log('Received transaction data:', transactionData);
+            // console.log('Received transaction data:', transactionData);
 
             // Send a success response
             res.status(200).json({ message: 'Received transaction data and saved successfully.', data: transactionData })
             // No data received
         }
-        console.log('No transaction data received.');
+        // console.log('No transaction data received.');
         // Send a response indicating no data received
-        res.status(400).send('No transaction data received.');
+        res.status(400).json({ message: 'No transaction data received.' });
     } catch (error) {
         // Handle any error that occurred during request processing
-        console.error('Error processing callback:', error);
+        // console.error('Error processing callback:', error);
         // Send a response indicating internal server error
-        res.status(500).send('Internal Server Error');
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 const saveTransaction = async (transactionData) => {
     try {
         const newTransaction = new transaction(transactionData)
-        console.log(req.params)
+        // console.log(req.params)
         const savedTransaction = await newTransaction.save();
-        console.log('Transaction saved successfully', savedTransaction);
+        // console.log('Transaction saved successfully', savedTransaction);
         return savedTransaction;
     } catch (error) {
-        console.error('Error saving transaction:', error);
+        // console.error('Error saving transaction:', error);
         throw error;
     }
 };
@@ -184,7 +217,7 @@ const getcallback = async () => {
         const allTransactions = await transaction.find({});
         return allTransactions;
     } catch (error) {
-        console.error('Error fetching callback data:', error);
+        // console.error('Error fetching callback data:', error);
         throw error;
     }
 };

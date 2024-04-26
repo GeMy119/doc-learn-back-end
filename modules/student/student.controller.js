@@ -47,7 +47,7 @@ const signUp = async (req, res) => {
           addedStudent,
           token,
         });
-        
+
       }
     }
   } catch (error) {
@@ -73,29 +73,29 @@ const signIn = async (req, res) => {
           .status(404)
           .json({ message: "User not found, You need to create an account" });
       }
-        let matched = bcrypt.compareSync(req.body.password, foundUser.password);
-        console.log("Passwords match?", matched);
+      let matched = bcrypt.compareSync(req.body.password, foundUser.password);
+      console.log("Passwords match?", matched);
 
-        if (matched) {
-          let token = jwt.sign({ id: foundUser.id }, "SecretKeyCanBeAnything", {
-            expiresIn: "30d", // when expired you cannot access /profile
-          });
-          console.log(token);
-          //! Sitting the token in the response cookiesafter successful login
-          res.cookie(
-            "token",
-            token, 
-            { httpOnly: true }
-          );
-          res
-            .status(200)
-            .json({ message: "User logged in successfully", token });
-        } else {
-          res.status(404).json({ message: "Please check your User password" });
-        }
+      if (matched) {
+        let token = jwt.sign({ id: foundUser.id, role: foundUser.role }, "SecretKeyCanBeAnything", {
+          expiresIn: "30d", // when expired you cannot access /profile
+        });
+        console.log(token);
+        //! Sitting the token in the response cookiesafter successful login
+        res.cookie(
+          "token",
+          token,
+          { httpOnly: true }
+        );
+        res
+          .status(200)
+          .json({ message: "User logged in successfully", token });
+      } else {
+        res.status(404).json({ message: "Please check your User password" });
       }
     }
-   catch (error) {
+  }
+  catch (error) {
     console.log("User Signin Error: ", error);
   }
 };
