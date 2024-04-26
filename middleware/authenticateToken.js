@@ -15,7 +15,7 @@ const authenticateTokenCookie = (req, res, next) => {
     tokenValue = token.slice(7); // Remove 'Bearer ' prefix
   }
 
-  jwt.verify(tokenValue, "secret_key", (err, decoded) => {
+  jwt.verify(tokenValue, "SecretKeyCanBeAnything", (err, decoded) => {
     if (err) {
       console.log("Error inside handleVerificationResult: ", err);
       return res.status(403).json({ message: "Cookie token verification failed", error: err });
