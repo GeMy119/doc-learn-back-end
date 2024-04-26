@@ -89,7 +89,8 @@ const payment = async (req, res) => {
 
 // Function to generate payment token
 async function generatePaymentToken(token, orderId, studentId) {
-    const student = await studentModel.find({ id: studentId })
+    const student = await studentModel.findOne({ id: studentId })
+    console.log(student)
 
     const data = {
         "auth_token": token,
@@ -119,7 +120,6 @@ async function generatePaymentToken(token, orderId, studentId) {
 
 // Other functions remain the same...
 
-export { payment };
 const callbackNode = async (req, res) => {
     try {
         const transactionData = req.query;
