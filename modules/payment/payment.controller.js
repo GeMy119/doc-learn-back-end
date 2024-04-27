@@ -96,7 +96,7 @@ async function generatePaymentToken(token, orderId, student) {
         "order_id": orderId,
         "billing_data": {
             "email": studentLogedIn.email,
-            "phone_number": studentLogedIn.phone,
+            "phone_number": `+2${studentLogedIn.phone}`,
             "first_name": studentLogedIn.firstName,
             "last_name": studentLogedIn.lastName,
             "apartment": "NA",
@@ -111,6 +111,7 @@ async function generatePaymentToken(token, orderId, student) {
         "currency": "EGP",
         "integration_id": 4485993
     };
+    console.log(data)
     const response = await axios.post('https://accept.paymob.com/api/acceptance/payment_keys', data);
     return response.data.token;
 }

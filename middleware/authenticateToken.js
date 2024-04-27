@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 const authenticateTokenCookie = (req, res, next) => {
-  console.log("Inside authentication middleware");
+  // console.log("Inside authentication middleware");
 
   const token = req.headers.authorization;
   console.log("Token from headers in authenticateTokenCookie function: ", token);
@@ -23,7 +23,6 @@ const authenticateTokenCookie = (req, res, next) => {
 
     req.student = decoded; // Decoded payload is set as the student property of the req object
     console.log("Decoded payload inside authentication middleware: ", decoded);
-
     next(); // Move to the next middleware or route handler
   });
 };
