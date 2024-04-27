@@ -185,35 +185,34 @@ const callback = async (req, res) => {
         if (Object.keys(transactionData).length > 0) {
             // Data received
             // Perform actions to save the data here
-            await saveTransaction(transactionData)
-            // console.log('Received transaction data:', transactionData);
+            await saveTransaction(transactionData);
 
             // Send a success response
-            res.status(200).json({ message: 'Received transaction data and saved successfully.', data: transactionData })
+            res.status(200).json({ message: 'Received transaction data and saved successfully.', data: transactionData });
+        } else {
             // No data received
+            res.status(400).json({ message: 'No transaction data received.' });
         }
-        // console.log('No transaction data received.');
-        // Send a response indicating no data received
-        res.status(400).json({ message: 'No transaction data received.' });
     } catch (error) {
         // Handle any error that occurred during request processing
-        // console.error('Error processing callback:', error);
+        console.error('Error processing callback:', error);
         // Send a response indicating internal server error
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
 const saveTransaction = async (transactionData) => {
     try {
-        const newTransaction = new transaction(transactionData)
-        // console.log(req.params)
+        const newTransaction = new Transaction(transactionData);
         const savedTransaction = await newTransaction.save();
-        // console.log('Transaction saved successfully', savedTransaction);
+        console.log(saveTransaction)
         return savedTransaction;
     } catch (error) {
-        // console.error('Error saving transaction:', error);
+        console.error('Error saving transaction:', error);
         throw error;
     }
 };
+
 const getcallback = async () => {
     try {
         const allTransactions = await transaction.find({});
