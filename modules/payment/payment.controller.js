@@ -203,7 +203,7 @@ const callback = async (req, res) => {
 
 const saveTransaction = async (transactionData) => {
     try {
-        const newTransaction = new Transaction(transactionData);
+        const newTransaction = new transaction(transactionData);
         const savedTransaction = await newTransaction.save();
         console.log(saveTransaction)
         return savedTransaction;
