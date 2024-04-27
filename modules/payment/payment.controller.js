@@ -113,6 +113,7 @@ async function generatePaymentToken(token, orderId, student) {
     };
     console.log(data)
     const response = await axios.post('https://accept.paymob.com/api/acceptance/payment_keys', data);
+    console.log(response)
     return response.data.token;
 }
 // Function to get authentication token
