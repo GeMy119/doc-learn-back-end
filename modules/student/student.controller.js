@@ -89,7 +89,7 @@ const signIn = async (req, res) => {
         );
         res
           .status(200)
-          .json({ message: "User logged in successfully", token });
+          .json({ message: "User logged in successfully", token, role: foundUser.role });
       } else {
         res.status(404).json({ message: "Please check your User password" });
       }
