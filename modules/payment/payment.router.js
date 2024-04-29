@@ -7,7 +7,7 @@ import { authenticateTokenCookie } from '../../middleware/authenticateToken.js';
 payment_route.use(bodyParser.json());
 payment_route.use(bodyParser.urlencoded({ extended: false }));
 payment_route.post('/initiatePayment', authenticateTokenCookie, payment);
-payment_route.post('/callback', callback);
+payment_route.post('/callback', authenticateTokenCookie, callback);
 payment_route.get('/callbackNode', callbackNode);
 // payment_route.post('/payment', payment);
 // payment_route.get('/success', success);

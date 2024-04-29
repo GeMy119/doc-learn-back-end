@@ -1,8 +1,7 @@
 import jwt from "jsonwebtoken";
+import studentModel from "../db/model/student.model";
 
 const authenticateTokenCookie = (req, res, next) => {
-  // console.log("Inside authentication middleware");
-
   const token = req.headers.authorization;
   console.log("Token from headers in authenticateTokenCookie function: ", token);
 
@@ -27,4 +26,21 @@ const authenticateTokenCookie = (req, res, next) => {
   });
 };
 
-export { authenticateTokenCookie };
+const checkPay = async (req, res, next) => {
+  try {
+    const student = req.student;
+    const foundStudent = await studentModel.findOne({ id: student.id });
+    if (!foundStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    if (!foundStudent.isPay) {
+      return res.status(401).json({ message: "Pay first to show questions" });
+    }
+    next();
+  } catch (error) {
+    console.error("Error in checkPay middleware:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export { authenticateTokenCookie, checkPay };

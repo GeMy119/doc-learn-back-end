@@ -182,24 +182,27 @@ const callbackNode = async (req, res) => {
 const callback = async (req, res) => {
     try {
         const transactionData = req.body;
-        if (Object.keys(transactionData).length > 0) {
-            // Data received
-            // Perform actions to save the data here
-            await saveTransaction(transactionData);
 
+        if (Object.keys(transactionData).length > 0) {
+            // Data received: Save transaction data and update student payment status
+            await saveTransaction(transactionData);
+            const student = await studentModel.findOneAndUpdate({ id: req.student.id }, { isPay: true }, { new: true });
+            console.log(student)
             // Send a success response
             res.status(200).json({ message: 'Received transaction data and saved successfully.', data: transactionData });
         } else {
-            // No data received
+            // No data received: Return a bad request response
             res.status(400).json({ message: 'No transaction data received.' });
         }
     } catch (error) {
         // Handle any error that occurred during request processing
-        console.error('Error processing callback:', error);
-        // Send a response indicating internal server error
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Error processing transaction callback:', error);
+
+        // Send a response indicating the error
+        res.status(500).json({ message: 'An error occurred while processing the transaction callback.' });
     }
 };
+
 
 const saveTransaction = async (transactionData) => {
     try {
