@@ -36,6 +36,7 @@ const checkPay = async (req, res, next) => {
     if (!foundStudent.isPay) {
       return res.status(401).json({ message: "Pay first to show questions" });
     }
+    console.log("pass pay")
     next();
   } catch (error) {
     console.error("Error in checkPay middleware:", error);
