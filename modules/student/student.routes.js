@@ -3,7 +3,8 @@ import {
   getAllStudent,
   signIn,
   signUp,
-  logout
+  logout,
+  editIsPay
 } from "./student.controller.js";
 import { signInSchem, signUpValidationSchema } from "./student.validation.js";
 import { validation } from "../../middleware/validation.js";
@@ -26,5 +27,6 @@ studentRoutes.post(
 
 //? Logout
 studentRoutes.post("/logout", logout);
+studentRoutes.put("/editPay", authenticateTokenCookie, editIsPay);
 
 export default studentRoutes;

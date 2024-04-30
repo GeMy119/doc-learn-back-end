@@ -111,10 +111,20 @@ const logout = (req, res) => {
     res.status(400).json({ message: "Logout Error: ", error });
   }
 };
+const editIsPay = async (req, res) => {
+  try {
+    const editStudentPay = await studentModel.findByIdAndUpdate({ id: req.student.id }, { isPay: false }, { new: true })
+    res.status(200).json({ message: "student payment role updated" })
+  } catch (error) {
+    res.status(500).json({ message: "internal server error" })
+
+  }
+}
 
 export {
   getAllStudent,
   signIn,
   signUp,
-  logout
+  logout,
+  editIsPay
 };
