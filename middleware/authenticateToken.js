@@ -3,7 +3,7 @@ import studentModel from "../db/model/student.model.js";
 
 const authenticateTokenCookie = (req, res, next) => {
   const token = req.headers.authorization;
-  console.log("Token from headers in authenticateTokenCookie function: ", token);
+  console.log("Token from headers in authenticateTokenCookie : ", token);
 
   if (!token) {
     return res.status(401).json({ message: "Please provide a cookie token" });
