@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import studentModel from "../db/model/student.model";
+import studentModel from "../db/model/student.model.js";
 
 const authenticateTokenCookie = (req, res, next) => {
   const token = req.headers.authorization;
